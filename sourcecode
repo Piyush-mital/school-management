@@ -1,0 +1,229 @@
+#include<stdio.h>
+#include<stdlib.h>
+struct student
+{
+ int rollno;
+ char name[30];
+ int chemmark;
+ int phymark;
+ int mathsmark;
+ int engmark;
+ int csmark;
+ float per;
+}stud;
+void insert()
+{
+ FILE *fp;
+ fp = fopen("Record", "a");
+ printf("Enter the Roll no   :");
+ scanf("%d", &stud.rollno);
+ printf("Enter the Name      :");
+ scanf("%s",stud.name);
+ printf("Enter the chem mark      :");
+ scanf("%d", &stud.chemmark);
+ printf("Enter the phy mark      :");
+ scanf("%d", &stud.phymark);
+ printf("Enter the maths mark      :");
+ scanf("%d", &stud.mathsmark);
+ printf("Enter the eng mark      :");
+ scanf("%d", &stud.engmark);
+ printf("Enter the cs mark      :");
+ scanf("%d", &stud.csmark);
+ int total=stud.chemmark+stud.phymark+stud.mathsmark+stud.engmark+stud.csmark;
+ stud.per=total/5;
+ fwrite(&stud, sizeof(stud), 1, fp);
+ fclose(fp);
+}
+void disp()
+{
+ FILE *fp1;
+ fp1 = fopen("Record", "r");
+ printf("\nRollNo  Name   chemMark phyMark mathsMark engMark csMark percentage\n\n");
+ while (fread(&stud, sizeof(stud), 1, fp1))
+ printf("  %d    %s    %d      %d        %d        %d        %d     %.2f\n",stud.rollno,stud.name,stud.chemmark,stud.phymark,stud.mathsmark,stud.engmark,stud.csmark,stud.per);
+ fclose(fp1);
+}
+void search()
+{
+ FILE *f;
+ int r,s,a;
+ printf("\nEnter the Roll no you want marksheet of  :");
+ scanf("%d",&r);
+ f=fopen("Record","r");
+  while (fread(&stud, sizeof(stud), 1,f))
+  {
+   s=stud.rollno;
+   if(s==r)
+   {
+    printf("Roll no=%d", stud.rollno);
+    printf("Name=%s", stud.name);
+    printf("chem Mark=%d", stud.chemmark);
+    printf("phy Mark=%d", stud.phymark);
+    printf("math Mark=%d", stud.mathsmark);
+    printf("eng Mark=%d", stud.engmark);
+    printf("cs Mark=%d", stud.csmark);
+    printf("percentage=%.2f", stud.per);
+    a=1;
+    }
+    if(stud.per>=33)
+    printf("---PASS---");
+    else
+    printf("---FAIL---");
+   }
+  fclose(f);
+  if(a!=1)
+  printf("Roll number %d is not Available in the file", r);
+}
+void deletefile()
+{
+ FILE *f;
+ FILE *p;
+ int r,s;
+ printf("Enter the Roll no you want to delete :");
+ scanf("%d", &r);
+  f=fopen("Record","r");
+  p=fopen("TempFile","w");
+  while (fread(&stud, sizeof(stud), 1,f))
+  {
+   s=stud.rollno;
+   if (s!=r)
+    fwrite(&stud, sizeof(stud), 1,p);
+  }
+  fclose(f);
+  fclose(p);
+  f=fopen("Record","w");
+  p=fopen("TempFile","r");
+  while (fread(&stud, sizeof(stud), 1,f)){
+  fwrite(&stud, sizeof(stud), 1, p);}
+  printf("\nRECORD DELETED\n");
+  fclose(f);
+  fclose(p);
+
+}
+int update()
+{
+ int a;
+ FILE *f;
+ FILE *p;
+ int s, r, ch;
+ printf("Enter roll number to update:");
+ scanf("%d", &r);
+  p = fopen("Record", "r");
+  f = fopen("TempFile", "w");
+  while (fread(&stud, sizeof(stud), 1, p))
+  {
+   s = stud.rollno;
+   if (s!=r){
+    fwrite(&stud, sizeof(stud), 1, f);
+   }
+   else
+   {
+    a=1;
+    printf("\n\t1. Update Name of Roll Number %d", r);
+    printf("\n\t2. Update chemMark of Roll Number %d", r);
+    printf("\n\t3. Update phyMark of Roll Number %d", r);
+    printf("\n\t4. Update mathsMark of Roll Number %d", r);
+    printf("\n\t5. Update engMark of Roll Number %d", r);
+    printf("\n\t6. Update csMark of Roll Number %d", r);
+    printf("\n\t7. Update all marks %d", r);
+    printf("\nEnter your choice:");
+    scanf("%d", &ch);
+    switch (ch)
+    {
+    case 1:
+     printf("Enter Name:");
+     scanf("%s",stud.name);
+     break;
+    case 2:
+     printf("Enter chemMark : ");
+     scanf("%d", &stud.chemmark);
+     break;
+    case 3:
+     printf("Enter phyMark : ");
+     scanf("%d", &stud.phymark);
+     break;
+    case 4:
+     printf("Enter mathsMark : ");
+     scanf("%d", &stud.mathsmark);
+     break;
+    case 5:
+     printf("Enter engMark : ");
+     scanf("%d", &stud.engmark);
+     break;
+    case 6:
+     printf("Enter csMark : ");
+     scanf("%d", &stud.csmark);
+     break;
+    case 7:
+     printf("Enter chemMark : ");
+     scanf("%d", &stud.chemmark);
+     printf("Enter phyMark : ");
+     scanf("%d", &stud.phymark);
+     printf("Enter mathsMark : ");
+     scanf("%d", &stud.mathsmark);
+     printf("Enter engMark : ");
+     scanf("%d", &stud.engmark);
+     printf("Enter csMark : ");
+     scanf("%d", &stud.csmark);  
+     break;
+    default:
+     printf("Invalid Selection");
+     break;
+    }
+    fwrite(&stud, sizeof(stud), 1, f);
+   }
+  }
+  fclose(p);
+  fclose(f);
+  p = fopen("Record", "w");
+  f = fopen("TempFile", "r");
+  while (fread(&stud, sizeof(stud), 1, f))
+  {
+   fwrite(&stud, sizeof(stud), 1, p);
+  }
+  fclose(f);
+  fclose(p);
+ if (a!=1)
+    printf("Roll number %d is not Available in the file", r);
+ else
+    printf("RECORD UPDATED");
+}
+int main()
+{
+ int c;
+ do
+ {
+  printf("\n---Select your choice---------\n");
+  printf("\n1. INSERT\n\t2. DISPLAY\n3. SEARCH");
+  printf("\n4. DELETE\n5. UPDATE\n");
+  printf("\n7. EXIT");
+  printf("\n------------------------------------------\n");
+  printf("Enter your choice:");
+  scanf("%d", &c);
+  switch (c)
+  {
+  case 1:
+   insert();
+   break;
+  case 2:
+    disp();
+   break;
+  case 3:
+   search();
+   break;
+  case 4:
+   deletefile();
+   break;
+  case 5:
+   update();
+   break;
+  case 7:
+   return 0;
+   break;
+  default:
+   printf("\nYour choice is wrong\nPlease try again...\n");
+   break;
+  }
+ }while (c!=7);
+ return 0;
+}
